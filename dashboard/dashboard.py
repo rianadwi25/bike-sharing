@@ -1,26 +1,24 @@
+import numpy as np
+import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import streamlit as st
+import subprocess
+import sys
+
+# Cek apakah matplotlib tersedia
+try:
+    import matplotlib.pyplot as plt
+    print("Matplotlib berhasil diimpor!")
+except ModuleNotFoundError:
+    print("Matplotlib tidak ditemukan! Menginstall ulang...")
+    subprocess.run([sys.executable, "-m", "pip", "install", "matplotlib"])
 
 # Load dataset
 file_path = "all_data.csv"
-df = pd.read_csv(file_path)
+df = pd.read_csv("all_data.csv")
 
 # Convert date column to datetime format
 df['dteday_x'] = pd.to_datetime(df['dteday_x'])
-
-# Pastikan kolom tanggal dalam format datetime
-df['dteday_x'] = pd.to_datetime(df['dteday_x'])
-print(df.columns)
-
-rfm_df = df.groupby('dteday_x', as_index=False).agg({
-    'cnt_x': ['max', 'nunique', 'sum']
-})
-rfm_df.columns = ['dteday_x', 'frequency', 'monetary', 'recency']
-rfm_df['dteday_x'] = rfm_df['dteday_x'].dt.date
-recent_date = df['dteday_x'].dt.date.max()
-rfm_df['recency'] = rfm_df['dteday_x'].apply(lambda x: (recent_date - x).days)
-rfm_df.head()
 
 # Streamlit App
 st.set_page_config(layout="wide")
@@ -56,10 +54,18 @@ season_mapping = {
 }
 
 byseason_df['season'] = byseason_df['season'].map(season_mapping)
-byseason_df = byseason_df.sort_values(by='cnt_day', ascending=False)
+
+# Sidebar untuk filter musim
+selected_season = st.sidebar.multiselect("Pilih Musim", options=byseason_df['season'].unique(), default=byseason_df['season'].unique())
+
+# Filter data berdasarkan musim
+display_df = byseason_df[byseason_df['season'].isin(selected_season)]
+
+# Visualisasi setelah filter
+display_df = display_df.sort_values(by='cnt_day', ascending=False)
 
 fig, ax = plt.subplots()
-ax.bar(byseason_df['season'], byseason_df['cnt_day'], color='blue')
+ax.bar(display_df['season'], display_df['cnt_day'], color='blue')
 ax.set_xlabel("Musim")
 ax.set_ylabel("Jumlah Penyewaan")
 ax.set_title("Distribusi Penyewaan Sepeda Berdasarkan Musim")
@@ -67,21 +73,10 @@ st.pyplot(fig)
 
 # Visualisasi tren penyewaan sepeda dari waktu ke waktu
 st.subheader("Tren Penyewaan Sepeda dari Waktu ke Waktu")
-start_date = pd.to_datetime("2011-01-01")
-end_date = pd.to_datetime("2012-12-31")
-
-df_filtered = df[(df['dteday_x'] >= start_date) & (df['dteday_x'] <= end_date)]
-
-fig, ax = plt.subplots(figsize=(12, 5))
-ax.plot(df_filtered['dteday_x'], df_filtered['cnt_x'], label='Total Rentals (Daily)', color='b')
+fig, ax = plt.subplots()
+ax.plot(filtered_df['dteday_x'], filtered_df['cnt_x'], color='blue', marker='o', linestyle='-')
 ax.set_xlabel("Tanggal")
-ax.set_ylabel("Jumlah Penyewaan Sepeda")
-ax.set_title("Tren Penyewaan Sepeda dari Waktu ke Waktu")
-ax.legend()
+ax.set_ylabel("Jumlah Penyewaan")
+ax.set_title("Tren Penyewaan Sepeda")
 plt.xticks(rotation=45)
 st.pyplot(fig)
-
-# RFM Analysis: Sort by Recency
-st.subheader("Top 5 Pelanggan Berdasarkan Recency")
-rfm_top5 = rfm_df.sort_values(by="recency", ascending=True).head(5)
-st.write(rfm_top5)
