@@ -15,7 +15,7 @@ except ModuleNotFoundError:
 
 # Load dataset
 file_path = "all_data.csv"
-df = pd.read_csv("all_data.csv")
+df = pd.read_csv("dashboard/all_data.csv")
 
 # Convert date column to datetime format
 df['dteday_x'] = pd.to_datetime(df['dteday_x'])
@@ -24,7 +24,7 @@ df['dteday_x'] = pd.to_datetime(df['dteday_x'])
 st.set_page_config(layout="wide")
 
 # Sidebar
-st.sidebar.image("logo.jpeg", use_container_width=True)
+st.sidebar.image("dashboard/logo.jpeg", use_container_width=True)
 
 # Date filter
 date_range = st.sidebar.date_input("Pilih Rentang Waktu", 
