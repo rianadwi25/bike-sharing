@@ -16,7 +16,7 @@ st.sidebar.markdown("<h3 style='text-align: center;'>Dashboard Sederhana Penyewa
 
 # Membaca file CSV
 file_path = 'dashboard/all_data.csv'
-df = pd.read_csv(dashboard/all_data.csv)
+df = pd.read_csv('dashboard/all_data.csv')
 
 def seasonal_rentals(df, show_pie=False):
     st.subheader("Tren Penyewaan Sepeda Berdasarkan Musim")
