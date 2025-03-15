@@ -5,7 +5,7 @@ import streamlit as st
 import os
 
 # Menambahkan logo di sidebar kiri dengan path lengkap (menggunakan use_container_width)
-st.sidebar.image("logo.jpeg", use_container_width=True)
+st.sidebar.image("dashboard/logo.jpeg", use_container_width=True)
 
 # Menambahkan kalender di bawah logo
 date = st.sidebar.date_input("Pilih Tanggal")
@@ -15,8 +15,8 @@ st.header("Dashboard Analisis Penyewaan Sepeda")
 st.sidebar.markdown("<h3 style='text-align: center;'>Dashboard Sederhana Penyewaan Sepeda</h3>", unsafe_allow_html=True)
 
 # Membaca file CSV
-file_path = 'all_data.csv'
-df = pd.read_csv(file_path)
+file_path = 'dashboard/all_data.csv'
+df = pd.read_csv(dashboard/all_data.csv)
 
 def seasonal_rentals(df, show_pie=False):
     st.subheader("Tren Penyewaan Sepeda Berdasarkan Musim")
